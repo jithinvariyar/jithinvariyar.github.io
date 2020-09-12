@@ -140,11 +140,11 @@
     
     .footer-nav li:last-child{
         display: block;
-        margin-top: 10px;
+        margin-top: 15px;
     }
     
     .btn-app img{
-        height: 30px;
+        height: 25px;
         width: auto;
         margin-right: 10px;
     }
