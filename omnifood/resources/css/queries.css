@@ -127,6 +127,16 @@
     .steps-box:first-child{text-align: center;}
     
     .app-screen{width: 40%;}
+    
+    .footer-nav{
+        float: none;
+        text-align: center;
+    }
+
+    .social-links{
+        float: none;
+        text-align: center;
+    }
 }
 
 /* Small phones : from 0px to 480px*/
