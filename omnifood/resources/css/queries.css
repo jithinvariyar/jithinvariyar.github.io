@@ -143,13 +143,15 @@
         margin-top: 15px;
     }
     
-    .btn-app img{
+    .steps-box a img[src*=svg]{
         height: 25px;
-        width: auto;
+        width: 70px;
         margin-right: 10px;
     }
     
     .steps-box a:last-child img{
+        height: 24px;
+        width: 70px;
         margin-right: 0;
     }
 }
