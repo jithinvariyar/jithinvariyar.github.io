@@ -137,6 +137,10 @@
         float: none;
         text-align: center;
     }
+    
+    footer{
+        padding: 20px;
+    }
 }
 
 /* Small phones : from 0px to 480px*/
