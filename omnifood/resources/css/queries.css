@@ -140,18 +140,16 @@
     
     .footer-nav li:last-child{
         display: block;
-        margin-top: 15px;
+        margin-top: 10px;
     }
     
-    .steps-box a img[src*=svg]{
-        height: 25px;
-        width: 70px;
+    .btn-app img{
+        height: 30px;
+        width: auto;
         margin-right: 10px;
     }
     
     .steps-box a:last-child img{
-        height: 24px;
-        width: 70px;
         margin-right: 0;
     }
 }
