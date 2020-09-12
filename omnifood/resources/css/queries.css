@@ -138,8 +138,19 @@
         text-align: center;
     }
     
-    footer{
-        padding: 20px;
+    .footer-nav li:last-child{
+        display: block;
+        margin-top: 10px;
+    }
+    
+    .btn-app img{
+        height: 30px;
+        width: auto;
+        margin-right: 10px;
+    }
+    
+    .steps-box a:last-child img{
+        margin-right: 0;
     }
 }
 
