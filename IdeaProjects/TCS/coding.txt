@@ -1,0 +1,1058 @@
+//-------------------------//
+TCS CODING 1
+//-------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		char dir = 'R';
+		int distance = 10;
+		boolean flag = false;
+		int x = 0 , y = 0;
+		System.out.println("Enter a number: ");
+		Scanner scanner = new Scanner(System.in);
+		int n = scanner.nextInt();
+		while(n>0){
+		    switch(dir){
+		        case 'R':
+		            x = x + distance;
+		            if(flag){
+		                dir = 'R';
+		                flag = false;
+		            } else{
+		                dir = 'U';   
+		                flag = true;
+		            }
+		            break;
+		        case 'L':
+                    x = x - distance;
+                    dir = 'D';
+                    break;
+                case 'U':
+                    y = y + distance;
+                    dir = 'L';
+                    break;
+                case 'D':
+                    y = y - distance;
+                    dir = 'R';
+                    break;
+		    }
+		    distance = distance + 10;
+		    n--;
+		}
+		System.out.println(x + "," + y);
+	}
+}
+
+//-------------------------//
+TCS CODING 2
+//-------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+	    Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter the number(Max 100 digit)");
+		String s = scanner.nextLine();
+		int odd = 0 , even = 0 ;
+		for(int i = 0 ; i < s.length() ; i++){
+		    if(i % 2 == 0){
+		        odd = odd + Integer.parseInt(s.substring(i,i+1));
+		        continue;
+		    }
+		    even = even + s.charAt(i) - '0';
+		}
+		int result = odd - even;
+		System.out.println(Math.abs(result));
+	}
+}
+
+//-------------------------//
+TCS CODING 3
+//-------------------------//
+
+
+import java.util.*;
+public class Main{
+    
+    public static void main (String[]args){
+        Scanner scanner = new Scanner (System.in);
+        System.out.println ("Enter the desired number");
+        String s = scanner.nextLine ();
+        byte[] character = s.getBytes();
+        int val = 0;
+        int pos = s.length() - 1;
+        int base = 1;
+        int result = 0;
+        while(pos >= 0){
+            if(character[pos] >= 'A'){
+                switch(character[pos]){
+                    case 'A':
+                    case 'a':
+                        val = 10;
+                        break;
+                    case 'B':
+                    case 'b':
+                        val = 11;
+                        break;
+                    case 'C':
+                    case 'c':
+                        val = 12;
+                        break;
+                    case 'D':
+                    case 'd':
+                        val = 13;
+                        break;
+                    case 'E':
+                    case 'e':
+                        val = 14;
+                        break;
+                    case 'F':
+                    case 'f':
+                        val = 15;
+                        break;
+                    case 'G':
+                    case 'g':
+                        val = 16;
+                        break;
+                }
+            }
+            else{
+                val = character[pos] - '0';
+            }
+            result = result + val*base;
+            pos--;
+            base = base * 17;
+        }
+        System.out.println(result);
+    }
+}
+
+//-------------------------//
+TCS CODING 4
+//-------------------------//
+
+import java.util.*;
+public class Main{
+    public static void main(String[] args){
+        Scanner scanner = new Scanner (System.in); 
+        List<String> keywords = new ArrayList<>(Arrays.asList("break","case","continue","default","defer","else","for","func","goto","if","map","range","return","struct","type","var"));
+        System.out.println("Enter a keyword to check");
+        String keyword = scanner.nextLine();
+        if(keywords.contains(keyword)){
+            System.out.println(keyword + " is a keyword");
+        }
+        else{
+            System.out.println(keyword + " is not a keyword");
+        }
+    }
+}
+
+//-------------------------//
+TCS CODING 5
+//-------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		int result = 0;
+		System.out.println("Enter the number");
+		int n = scanner.nextInt();
+		if(n % 2 != 0){
+		    int term = n/2 + 1;
+		    result = result + ((int)Math.pow(2,term-1));
+		    System.out.println(result);
+		} else{
+		    int term = n / 2;
+		    result = result + ((int)Math.pow(3,term-1));
+		     System.out.println(result);
+		}
+	}
+}
+
+
+//-------------------------//
+TCS CODING 6
+//-------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+	    Scanner scanner = new Scanner(System.in);
+	    System.out.println("Enter Three Words");
+	    String s1 = scanner.nextLine();
+	    String s2 = scanner.nextLine();
+	    String s3 = scanner.nextLine();
+        s1 = s1.replaceAll("(?i)[aeiou]","*");
+        s2 = s2.replaceAll("(?i)[^aeiou 0-9]","@");
+        s3 = s3.toUpperCase();
+        System.out.println(s1 + s2 + s3);
+	}
+}
+
+
+//-------------------------//
+TCS CODING 7
+//-------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+	    Scanner scanner = new Scanner(System.in);
+	    System.out.println("Enter The Number Of Term");
+	    int n = scanner.nextInt();
+	    if(n%2!=0){
+	        System.out.println(fibonacci(n/2 + 1));
+	    }
+	    else{
+	        System.out.println(prime(n/2));
+	    }
+	}
+	
+	public static int fibonacci(int n){
+	    if(n==0){
+	        return 0;
+	    }
+	    else if(n==1){
+	        return 1;
+	    } 
+	    return fibonacci(n-1) + fibonacci(n-2);
+	}
+	
+	public static int prime(int n){
+	    int result = 0;
+	    int term = 0;
+	    for(int i=2;i>=2;i++){
+	        int count = 0;
+	        for(int j=1;j<=i;j++){
+	            if(i % j ==0){
+	                count++;
+	            }
+	        }
+	        if(count==2){
+	            term++;
+	            result = i;
+	            if(term==n){
+	                break;
+	            }
+	        }
+	    }
+	    return result;
+	}
+}
+
+
+//-------------------------//
+TCS CODING 8
+//-------------------------//
+
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+	    Scanner scanner = new Scanner(System.in);
+	    System.out.println("Enter the position:");
+	    int n = scanner.nextInt();
+	    int result=0;
+	    if(n%2 !=0){
+	        result = mul2(n/2 +1);
+	    } else{
+	        result = natural(n/2);
+	    }
+	    
+	    System.out.println(result);
+	}
+	
+	public static int mul2(int n){
+	    return (0 + (n-1) * 2);
+	}
+	
+	public static int natural(int n){
+	    return (n-1);
+	}
+}
+
+
+//-------------------------------------//
+TCS CODING 9 LONGEST COMMON SUBSEQUENCE
+//------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+        String str1 = "AGGTAB";
+        String str2= "GXTXAYB";
+        char[] arrayStr1 = str1.toCharArray();
+        char[] arrayStr2 = str2.toCharArray();
+        int result = lcs(arrayStr1,arrayStr2,arrayStr1.length,arrayStr2.length);
+        System.out.println(result);
+
+	}
+	
+	public static int lcs(char[] array1,char[] array2,int len1,int len2){
+	    if(len1==0 || len2==0){
+	        return 0;
+	    }
+	    else if(array1[len1-1] == array2[len2-1]){
+	        return 1 + lcs(array1,array2,len1-1,len2-1);
+	    }
+	    else{
+	        return Math.max(lcs(array1,array2,len1-1,len2),lcs(array1,array2,len1,len2-1));
+	    }
+	}
+}
+
+//-------------------------------------//
+TCS CODING 10 Subsrings
+//------------------------------------//
+
+import java.util.*;
+public class Main
+{
+    public static int count = 0;
+	public static void main(String[] args) {
+		String str = "jithin";
+		for(int charCount = 1  ; charCount <= str.length() ; charCount++){
+		    print(str,charCount);
+		}
+		
+		System.out.println(count);
+	}
+	
+	public static void print(String str, int charCount){
+	    for(int i=0;i<=str.length()-charCount;i++){
+	        System.out.println(str.substring(i,i+charCount));
+	        count++;
+	    }
+	}
+}
+
+
+//-------------------------------------//
+TCS CODING 11 Occurence in array
+//------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+        Map<Integer,Integer> map = new LinkedHashMap<>();
+        int[] arr = new int[]{10, 20, 20};
+        for(int i = 0; i<arr.length;i++){
+            if(!map.containsKey(arr[i])){
+                map.put(arr[i],1);
+            } else{
+                int count = map.get(arr[i]) + 1;
+                map.put(arr[i],count);
+            }
+        }
+        for(Map.Entry<Integer,Integer> entry: map.entrySet()){
+            System.out.println(entry.getKey() + "\t" + entry.getValue());
+        }
+	}
+}
+
+
+//-------------------------------------//
+TCS CODING 12 Armstrong number
+//------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter the number :");
+		int n = scanner.nextInt();
+		int number = n;
+		int digits = 0;
+		while(n > 0){
+		    digits++;
+		    n = n / 10;
+		}
+		
+		int result = armstrong(number,digits);
+		if(result == number){
+		    System.out.println(number + " is an armstrong number");
+		}
+	}
+	
+	public static int armstrong(int number, int digits){
+	    int result = 0;
+	    while(number > 0){
+	        int digit = number % 10;
+	        int temp = ((int)Math.round(Math.pow(digit,digits)));
+	        result = result + temp;
+	        number = number / 10;
+	    }
+	    return result;
+	}
+}
+
+
+//-------------------------------------//
+TCS CODING 12 DECIMAL TO OCTAL
+//------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter the decimal number");
+		int n = scanner.nextInt();
+		int digit = 0;
+		int[] arr = new int[n];
+		int i =0;
+		int result = 0;
+		int pos = 1;
+		while(n>0){
+		    digit = n % 8;
+		    arr[i] = digit;
+		    i++;
+		    n = n / 8;
+		}
+		for(int j=0; j< arr.length;j++){
+		    result = result + arr[j] * pos;
+		    pos = pos * 10;
+		}
+		System.out.println(result);
+	}
+	
+}
+
+
+//-------------------------------------//
+TCS CODING 13 BINARY TO OCTAL
+//------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter the binary string");
+		String s = scanner.nextLine();
+		int size = s.length()-1;
+		int decimal = binToDec(s,size);
+		decToOctal(decimal);
+	}
+	
+	public static void decToOctal(int decimal){
+	    int[] arr = new int[decimal];
+	    int i =0;
+	    int result = 0;
+	    while(decimal > 0){
+	        arr[i++] = decimal % 8;
+	        decimal /=8;
+	    }
+	    for(int j=0 ; j < arr.length;j++){
+	        result += arr[j] * ((int)(Math.round(Math.pow(10,j))));
+	    }
+	    System.out.println(result);
+	}
+	
+	public static int binToDec(String s,int size){
+	    int res = 0;
+		for(int i=0;i<s.length();i++){
+		    res = res + (Integer.parseInt(s.substring(i,i+1)) * ((int)(Math.round(Math.pow(2,size)))));
+		    size--;
+		}
+		return res;
+	}
+}
+
+
+//-------------------------------------//
+TCS CODING 14 PERMUTATION OF STRING
+//------------------------------------//
+
+import java.util.*;
+public class Main{
+	
+	static Map<String,Integer> map = new LinkedHashMap<>();
+	public static void main(String[] args) {
+		permutation("aab","");
+		for(String entry: map.keySet()){
+		    System.out.println(entry);
+		}
+	}
+	
+	public static void permutation(String str, String ans){
+	    if(str.length()==0){
+	        map.putIfAbsent(ans,1);
+	        return;
+	    }
+	    for(int i = 0 ; i < str.length() ; i++){
+	        char ch = str.charAt(i);
+	        String ros = str.substring(0,i) + str.substring(i+1);
+	        permutation(ros,ans + ch);
+	    }
+	}
+}
+
+
+//-------------------------------------//
+TCS CODING 15 STRING REVERSE
+//------------------------------------//
+
+public class Main
+{
+	public static void main(String[] args) {
+		String str = "jithin";
+		byte[] strArry = str.getBytes();
+		String rev ="";
+		for(int i = strArry.length-1 ; i >=0 ;i--){
+		    char s = (char)strArry[i];
+		    rev = rev + s;
+		}
+		System.out.println(rev);
+	}
+}
+
+//-------------------------------------//
+TCS CODING 16 DECIMAL TO BINARY
+//------------------------------------//
+
+public class Main
+{
+	public static void main(String[] args) {
+		int n = 108;
+        int[] arr = new int[25];
+        int size = 0;
+		int index = 0;
+		while(n > 0){
+		    size++;
+		    arr[index] = n % 2;
+		    n/=2;
+		    index++;
+		}
+		int pos = (arr.length-1)-(size-1);
+		int exact = (arr.length-1) - pos;
+		for(int i = exact ; i>=0 ;i--){
+            System.out.print(arr[i]);
+		}
+	}
+}
+
+//-------------------------------------//
+TCS CODING 17 FIND A STRING IN ANOTHER
+//------------------------------------//
+
+
+public class Main
+{
+	public static void main(String[] args) {
+	    String s = "jithinmv";
+	    String check = "p";
+	    int len = check.length();
+	    int count = 0;
+	    byte[] sArray = s.getBytes();
+	    byte[] checkArray = check.getBytes();
+	    for(int i = 0,j=0; i <= sArray.length ; i++){
+	        if(count==len){
+	            System.out.println("Hurray");
+	            break;
+	        }
+	        if(i==sArray.length){
+	            System.out.println("Not Found");
+	            break;
+	        }
+	        if(sArray[i] == checkArray[j]){
+	            j++;
+	            count++;
+	        } else{
+	            j=0;
+	            count = 0;
+	        }
+	    }
+
+	}
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 18 FIND NUMBER OF OCCURENCES OF A STRING IN ANOTHER
+//------------------------------------------------------------//
+
+import java.util.regex.*;
+public class Main
+{
+	public static void main(String[] args) {
+		String s = "jithinthinfgthi";
+		int count = 0;
+		Pattern patern = Pattern.compile("th(i)");
+		Matcher matcher = patern.matcher(s);
+		while(matcher.find()){
+            System.out.println(matcher.group(1));
+            count++;		    
+		}
+		System.out.println(count);
+	}
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 19 REMOVE EXTRA SPACES IN A SENTENCE
+//------------------------------------------------------------//
+
+public class Main
+{
+	public static void main(String[] args) {
+		String s = "I know  how to  work  babe so   go away";
+		String res = trimIt(s);
+		System.out.println(res);
+		System.out.println(res.length());
+	}
+	
+	public static String trimIt(String s){
+	    String[] s1 = s.split(" ");
+	    String res = "";
+	    for(int i=0 ; i < s1.length;i++){
+	        if(s1[i].isEmpty()){
+	            continue;
+	        }
+	        if(i==0){
+	            res = res + s1[i];
+	        } else{
+	            res = res + " " + s1[i];   
+	       }
+	    }
+	    return res;
+	}
+}
+
+//-------------------------------------------------------------//
+TCS CODING 19 PRINT UPPER,LOWER,DIGIT,PUNCT numbers
+//------------------------------------------------------------//
+
+import java.util.regex.*;
+public class Main
+{
+	public static void main(String[] args) {
+		String s = "Hey Jithin you will crack TCS NQT2021.";
+		Pattern upper = Pattern.compile("[A-Z]");
+		Pattern lower = Pattern.compile("[a-z]");
+		Pattern number = Pattern.compile("[0-9]");
+		Pattern punct = Pattern.compile("\\.");
+		Matcher upperMatcher = upper.matcher(s);
+		Matcher lowerMatcher = lower.matcher(s);
+		Matcher numberMatcher = number.matcher(s);
+		Matcher punctMatcher = punct.matcher(s);
+		
+		printNumbers(upperMatcher,"Upper");
+		printNumbers(lowerMatcher,"Lower");
+		printNumbers(numberMatcher,"Number");
+		printNumbers(punctMatcher,"Punctuation");
+	}
+	
+	public static void printNumbers(Matcher matcher,String info){
+	    int count = 0;
+	    while(matcher.find()){
+	        count++;
+	    }
+	    System.out.println(info + ": " + count);
+	}
+}
+
+//-------------------------------------------------------------//
+TCS CODING 20 REMOVE VOWELS
+//------------------------------------------------------------//
+
+import java.util.regex.*;
+public class Main
+{
+	public static void main(String[] args) {
+		String s = "jithin";
+		String vowels = "(?i)[aeiou]";
+		s = s.replaceAll(vowels,"");
+		System.out.println(s);
+	}
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 21 PANGRAM
+//------------------------------------------------------------//
+
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    // Complete the pangrams function below.
+    static String pangrams(String s) {
+        String alphabets="abcdefghijklmnopqrstuvwxyz";
+        for(int i=0 ; i < s.length();i++){
+            String s1 = s.charAt(i) + "";
+            s1 = s1.toLowerCase();
+            alphabets = alphabets.replaceAll(s1,"");
+        }
+        if(alphabets.isEmpty()){
+            return "pangram";
+        } else{
+            return "not pangram";
+        }
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        String s = scanner.nextLine();
+
+        String result = pangrams(s);
+
+        bufferedWriter.write(result);
+        bufferedWriter.newLine();
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 22 MATRIX MULTIPLICATION
+//------------------------------------------------------------//
+
+public class Main
+{
+	public static void main(String[] args) {
+		int[][] A = new int[][]{{ 1, 1, 1 }, 
+                                { 2, 2, 2 }, 
+                                { 3, 3, 3 }, 
+                                { 4, 4, 4 }};
+		int [][] B = new int[][]{{ 1, 1, 1, 1 }, 
+                                { 2, 2, 2, 2 }, 
+                                { 3, 3, 3, 3 }};
+		int rowA = A.length;
+		int colA = A[0].length;
+		int rowB = B.length;
+		int colB = B[0].length;
+		int [][] C = new int[rowA][colB];
+		printMatrix(A,rowA,colA);
+		printMatrix(B,rowB,colB);
+		multiply(A,B,C,rowA,colA,rowB,colB);
+		                         
+	}
+	
+	public static void multiply(int[][] A, int[][] B, int[][] C, int rowA, int colA, int rowB, int colB){
+	    if(colA != rowB){
+	        System.out.println("The matrices can't be multiplied");
+	        return;
+	    }
+	    for(int i=0;i<rowA;i++){
+	        for(int j=0;j<colB;j++){
+	            for(int k=0;k<rowB;k++){
+	                C[i][j] += A[i][k] * B[k][j]; 
+	            }
+	        }
+	    }
+	    printMatrix(C,C.length,C[0].length);
+	    System.out.println("The difference between Diagonals are");
+	    differDiagonal(C);
+	}
+	
+	public static void printMatrix(int[][] C,int row,int col){
+	    for(int i=0;i<row;i++){
+	        for(int j=0;j<col;j++){
+	            System.out.print(C[i][j] + "\t");
+	        }
+	        System.out.println();
+	    }
+	    System.out.println("--------------------------");
+	}
+	
+	public static void differDiagonal(int[][] C){
+	   int leftDiagonal = 0;
+	   int rightDiagonal = 0;
+	   for(int i=0,j=0;i<C.length;){
+	       leftDiagonal+=C[i++][j++];
+	   }
+	   
+	   for(int i=0,j=C[0].length-1;i<C.length;){
+        	rightDiagonal+=C[i++][j--];
+	   }
+	   System.out.println(leftDiagonal-rightDiagonal);
+	}
+}
+
+//-------------------------------------------------------------//
+TCS CODING 22 LCM OF 2 NUMBERS
+//------------------------------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter 2 numbers");
+		int a = scanner.nextInt();
+		scanner.nextLine();
+		int b = scanner.nextInt();
+		int gcd = gcd(a,b);
+		int prod = a*b;
+		int lcm = prod / gcd;
+		System.out.println("LCM(" + a + "," + b + ") is: " +lcm);
+	}
+	
+	public static int gcd(int a,int b){
+	    if(b==0){
+	        return a;
+	    }
+	    return gcd(b,a % b);
+	}
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 22 LCM OF AN ARRAY OF NUMBERS
+//------------------------------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("How many numbers you want to enter?");
+		int n = scanner.nextInt();
+		scanner.nextLine();
+		int[] arr = new int[n];
+		int i=0;
+		while(n>0){
+		    System.out.print("Enter the number: ");
+		    arr[i++] = scanner.nextInt();
+		    scanner.nextLine();
+		    n--;
+		} 
+		int gcd = arr[0];
+		for(int j=1;j<arr.length;j++){
+		    gcd = gcd(gcd,arr[j]);
+		}
+		int k=0;
+		int lcm = (arr[k] * arr[k+1]) / gcd;
+		for(k=2;k<arr.length;k++){
+		    lcm = (lcm * arr[k]) / gcd;
+		}
+		System.out.println(lcm);
+	}
+	
+	public static int gcd(int a,int b){
+	    if(b==0){
+	        return a;
+	    }
+	    return gcd(b,a % b);
+	}
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 23 SAMPLE TEST MARATHON
+//------------------------------------------------------------//
+
+import java.util.*;
+public class Main{
+   public static void main(String args[]){
+       int count = 0;
+       boolean flag = true;
+       Scanner scanner = new Scanner(System.in);
+       System.out.println("Enter the float value/ q to exit");
+       String in = scanner.nextLine();
+       List<Double> list = new ArrayList<>();
+       while(!(in.equals("q"))){
+            list.add(Double.parseDouble(in));
+            in = scanner.nextLine();
+       }
+       Collections.sort(list,Collections.reverseOrder());
+       for(Double d:list){
+           if(d==42.195){
+               count++;
+           }
+           if(d<0){flag = false;}
+       }
+       if(!flag){System.out.println("Invalid Input");return;}
+       else{
+           for(int i=count;i<=count+2;i++){
+                 System.out.print(list.get(i) + " ");
+           }
+       }
+   }
+}
+
+//-------------------------------------------------------------//
+TCS CODING 24 PERFECT NUMBER
+//------------------------------------------------------------//
+
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        int res = 1;
+        for(int i=2; i<= n/2 ;i++){
+            if(n % i == 0){
+                res += i;
+            }
+        }
+        if(res == n){
+            System.out.println("Yes");
+        } else{
+            System.out.println("No");
+        }
+    }
+}
+
+//-------------------------------------------------------------//
+TCS CODING 25 STRONG NUMBER
+//------------------------------------------------------------//
+
+import java.util.*;
+public class Main
+{
+    public static int check = 0;
+	public static void main(String[] args) {
+        Scanner scanner =  new Scanner(System.in);
+        System.out.println("Enter the number");
+        int n = scanner.nextInt();
+        int temp = n;
+        while(n>0){
+            int res = fact(n % 10);
+            check += res;
+            n /= 10;
+        }
+        if(check == temp){
+            System.out.println("YES");
+        } else{
+            System.out.println("NO");
+        }
+	}
+	
+	public static int fact(int n){
+	    if(n==0){
+	        return 1;
+	    }
+	    return n * fact(n-1);
+	}
+}
+
+//-------------------------------------------------------------//
+TCS CODING 25 CEASAR CIPHER
+//------------------------------------------------------------//
+
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter a String: ");
+		String str = scanner.nextLine();
+		System.out.println("Enter the key: ");
+		int key = scanner.nextInt();
+		System.out.println("The plain text is: " + str);
+		String result = ceasarCipherEncrypt(str,key);
+		System.out.println("The ciphered text is: " + result);
+	}
+	public static String ceasarCipherEncrypt(String text, int key){
+	    char[] characters = text.toCharArray();
+	    String counstructed = "";
+	    for(int i=0;i<characters.length;i++){
+	        int intOfChar = characters[i];
+	        if(intOfChar < 91 && intOfChar > 64){
+	            intOfChar = ((intOfChar + key - 65) % 26) + 65;
+	        }
+	        else if(intOfChar < 123 && intOfChar > 96){
+	            intOfChar = ((intOfChar + key - 97) % 26) + 97;
+	        }
+	        else if(intOfChar < 58 && intOfChar > 47){
+	            intOfChar = ((intOfChar + key - 48) % 10) + 48;
+	        }
+	        else{
+	            System.out.println("This text can not be enciphered!");
+	            break;
+	        }
+	        characters[i] = (char)intOfChar;
+	    }
+	    for(int i=0;i<characters.length;i++){
+	        counstructed += characters[i];
+	    }
+	    return counstructed;
+	}
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 25 Array Rotation LEFT ********
+//------------------------------------------------------------//
+
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    // Complete the rotLeft function below.
+    static int[] rotLeft(int[] a, int d) {
+        int[] copy = Arrays.copyOf(a,a.length);
+        int length = a.length;
+        for(int i=0 ; i< a.length;i++){
+            int pos = i-d;
+            int exactPos;
+            if( pos < 0 ){
+                pos *= -1;
+                exactPos = length - pos;
+            } else{
+                exactPos = pos % length;    
+            }
+            a[exactPos] = copy[i];
+        }
+        return a;
+    }
+}
+
+
+//-------------------------------------------------------------//
+TCS CODING 25 Array Rotation RIGHT
+//------------------------------------------------------------//
+
+public class Solution {
+
+    // Complete the circularArrayRotation function below.
+    static int[] circularArrayRotation(int[] a, int k, int[] queries) {
+        int[] copy = Arrays.copyOf(a,a.length);
+        int length = a.length;
+        for(int i=0 ; i<a.length;i++){
+            int newPos = (i + k) % length;
+            a[newPos] = copy[i]; 
+        }
+        
+        for(int i=0; i<queries.length;i++){
+            int pos = queries[i];
+            queries[i] = a[pos];
+        }
+        return queries;
+    }
+}
+

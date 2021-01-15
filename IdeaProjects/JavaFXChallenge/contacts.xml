@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contacts>
+<contact>
+	<first_name>Jishnu</first_name>
+	<last_name>variyar</last_name>
+	<phone_number>808918</phone_number>
+	<notes>freve</notes>
+</contact>
+<contact>
+	<first_name>null</first_name>
+	<last_name>null</last_name>
+	<phone_number>null</phone_number>
+	<notes>null</notes>
+</contact>
+<contact>
+	<first_name>dfbde</first_name>
+	<last_name>null</last_name>
+	<phone_number>null</phone_number>
+	<notes>null</notes>
+</contact>
+<contact>
+	<first_name>dd</first_name>
+	<last_name>ddd</last_name>
+	<phone_number>ddd</phone_number>
+	<notes>dd</notes>
+</contact>
+<contact>
+	<first_name>null</first_name>
+	<last_name>null</last_name>
+	<phone_number>null</phone_number>
+	<notes>null</notes>
+</contact>
+</contacts>
