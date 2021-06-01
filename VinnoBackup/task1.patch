@@ -1,0 +1,421 @@
+diff --git a/CoffeeModel/src/main/java/dk/scanomat/coffeecloud/model/storage/CoffeeGroupReplenishment.java b/CoffeeModel/src/main/java/dk/scanomat/coffeecloud/model/storage/CoffeeGroupReplenishment.java
+new file mode 100644
+index 00000000..ed62ade7
+--- /dev/null
++++ b/CoffeeModel/src/main/java/dk/scanomat/coffeecloud/model/storage/CoffeeGroupReplenishment.java
+@@ -0,0 +1,43 @@
++package dk.scanomat.coffeecloud.model.storage;
++
++import java.util.Set;
++
++import javax.validation.constraints.Min;
++import javax.validation.constraints.NotNull;
++
++import org.springframework.data.annotation.Id;
++import org.springframework.data.annotation.Transient;
++import org.springframework.data.mongodb.core.mapping.Document;
++
++import dk.scanomat.coffeecloud.model.storage.docs.ICoffeeReplenishmentDocs;
++import io.swagger.annotations.ApiModelProperty;
++import lombok.AccessLevel;
++import lombok.Data;
++import lombok.experimental.FieldDefaults;
++
++@Data
++@FieldDefaults(level = AccessLevel.PRIVATE)
++@Document(collection = "coffee_group_replenishment")
++public class CoffeeGroupReplenishment {
++	@Id
++	String id;
++
++	long groupId;
++
++	@Transient
++	Set<String> serialNumbers;
++
++	@ApiModelProperty(notes = ICoffeeReplenishmentDocs.COFFEE_MINIMUM_REMAINING_AMOUNT)
++	double coffeeMinimumRemainingAmount;
++
++	Timestamp createdTimestamp;
++
++	Timestamp updatedTimestamp;
++
++	@NotNull
++	@Min(value = 0)
++	double coffeeReplenishmentAmount;
++
++	Set<String> operatorEmails;
++
++}
+diff --git a/CoffeeService/src/main/java/dk/scanomat/coffeecloud/service/impl/CoffeeGroupReplenishmentService.java b/CoffeeService/src/main/java/dk/scanomat/coffeecloud/service/impl/CoffeeGroupReplenishmentService.java
+new file mode 100644
+index 00000000..20688629
+--- /dev/null
++++ b/CoffeeService/src/main/java/dk/scanomat/coffeecloud/service/impl/CoffeeGroupReplenishmentService.java
+@@ -0,0 +1,84 @@
++package dk.scanomat.coffeecloud.service.impl;
++
++import java.util.Date;
++import java.util.Map;
++import java.util.Optional;
++
++import org.bson.types.ObjectId;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++import org.springframework.util.ObjectUtils;
++
++import dk.scanomat.coffeecloud.model.storage.CoffeeGroupReplenishment;
++import dk.scanomat.coffeecloud.model.storage.CoffeeReplenishment;
++import dk.scanomat.coffeecloud.model.storage.CoffeeReplenishment.Origin;
++import dk.scanomat.coffeecloud.model.storage.Timestamp;
++import dk.scanomat.coffeecloud.storage.repository.CoffeeGroupReplenishmentRepository;
++
++@Service
++public class CoffeeGroupReplenishmentService {
++	
++	@Autowired
++	private CoffeeGroupReplenishmentRepository coffeeGroupReplenishmentRepository;
++	
++	@Autowired
++	private CoffeeReplenishmentService coffeeReplenishmentService;
++		
++	/***
++	 * Add the CoffeegroupReplenishment object in to database
++	 * 
++	 * @param coffeeGroupReplenishment
++	 * @return CoffeeGroupReplenishment object that is created
++	 */
++	public CoffeeGroupReplenishment addGroupReplenishment(CoffeeGroupReplenishment coffeeGroupReplenishment) {
++		if (ObjectUtils.isEmpty(coffeeGroupReplenishment.getId()))
++			coffeeGroupReplenishment.setUpdatedTimestamp(Timestamp.getCurrentTimestamp());
++		else
++			coffeeGroupReplenishment.setCreatedTimestamp(Timestamp.getCurrentTimestamp());
++		return coffeeGroupReplenishmentRepository.save(coffeeGroupReplenishment);
++	}
++
++	/***
++	 * @param id
++	 * @return The CoffeeGroupReplenishment Object corresponding to the provided parameter
++	 */
++	public CoffeeGroupReplenishment getCoffeeGroupReplenishment(String id) {
++		Optional<CoffeeGroupReplenishment> coffeeGroupReplenishment = coffeeGroupReplenishmentRepository.findById(id);
++		return coffeeGroupReplenishment.orElse(null);
++	}
++	
++	/***
++	 * Assign serialnumbers for the saved {@link CoffeeGroupReplenishment}
++	 * 
++	 * @param coffeeGroupReplenishment
++	 * @param serialNumbersAndCoffeeAmount
++	 */
++	public void assignSerialNumbers(CoffeeGroupReplenishment coffeeGroupReplenishment,
++			Map<String, Double> serialNumbersAndCoffeeAmount, ObjectId currentUserId) {
++		coffeeGroupReplenishment.getSerialNumbers().stream().forEach(sn -> {
++			double coffeeAmount = serialNumbersAndCoffeeAmount.get(sn);
++			createCoffeeReplenishment(sn,coffeeAmount,coffeeGroupReplenishment, currentUserId);
++		});
++	}
++
++	/***
++	 * Creates a replenishment for a machine with serial number(sn). Also creates the associated rule in rules collection.
++	 * 
++	 * @param sn
++	 * @param coffeeAmount
++	 * @param coffeeGroupReplenishment 
++	 */
++	private void createCoffeeReplenishment(String sn, double coffeeAmount,
++			CoffeeGroupReplenishment coffeeGroupReplenishment, ObjectId currentUserId) {
++		CoffeeReplenishment coffeeReplenishment = new CoffeeReplenishment();
++		coffeeReplenishment.setCoffeeAmount(coffeeAmount);
++		coffeeReplenishment.setCoffeeMinimumRemainingAmount(coffeeGroupReplenishment.getCoffeeMinimumRemainingAmount());
++		coffeeReplenishment.setCoffeeReplenishmentAmount(coffeeGroupReplenishment.getCoffeeReplenishmentAmount());
++		coffeeReplenishment.setOperatorEmails(coffeeGroupReplenishment.getOperatorEmails());
++		coffeeReplenishment.setPurchasedDate(new Date());
++		Origin origin = new Origin();
++		origin.setSN(sn);
++		coffeeReplenishment.setOrigin(origin);
++		coffeeReplenishmentService.addReplenishmentOrder(coffeeReplenishment,currentUserId);
++	}
++}
+diff --git a/CoffeeStorage/src/main/java/dk/scanomat/coffeecloud/storage/repository/CoffeeGroupReplenishmentRepository.java b/CoffeeStorage/src/main/java/dk/scanomat/coffeecloud/storage/repository/CoffeeGroupReplenishmentRepository.java
+new file mode 100644
+index 00000000..1eb3e2ee
+--- /dev/null
++++ b/CoffeeStorage/src/main/java/dk/scanomat/coffeecloud/storage/repository/CoffeeGroupReplenishmentRepository.java
+@@ -0,0 +1,9 @@
++package dk.scanomat.coffeecloud.storage.repository;
++
++import org.springframework.data.mongodb.repository.MongoRepository;
++
++import dk.scanomat.coffeecloud.model.storage.CoffeeGroupReplenishment;
++
++public interface CoffeeGroupReplenishmentRepository extends MongoRepository<CoffeeGroupReplenishment, String>{
++	CoffeeGroupReplenishment findFirstBygroupIdOrderByCreatedTimestampMillisecondsDesc(long groupId);
++}
+diff --git a/CoffeeWebApplication/src/main/java/dk/scanomat/coffeecloud/webapp/rest/CoffeeGroupReplenishmentResource.java b/CoffeeWebApplication/src/main/java/dk/scanomat/coffeecloud/webapp/rest/CoffeeGroupReplenishmentResource.java
+new file mode 100644
+index 00000000..d5b97cb1
+--- /dev/null
++++ b/CoffeeWebApplication/src/main/java/dk/scanomat/coffeecloud/webapp/rest/CoffeeGroupReplenishmentResource.java
+@@ -0,0 +1,73 @@
++package dk.scanomat.coffeecloud.webapp.rest;
++
++import java.util.Map;
++import java.util.Set;
++
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.util.ObjectUtils;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PathVariable;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.PutMapping;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++import dk.scanomat.coffeecloud.exception.ConflictException;
++import dk.scanomat.coffeecloud.jms.publisher.ReloadRulesPublisher;
++import dk.scanomat.coffeecloud.model.constants.EventType;
++import dk.scanomat.coffeecloud.model.storage.CoffeeGroupReplenishment;
++import dk.scanomat.coffeecloud.security.SecurityUtils;
++import dk.scanomat.coffeecloud.service.impl.CoffeeAuthorizationService;
++import dk.scanomat.coffeecloud.service.impl.CoffeeGroupReplenishmentService;
++import dk.scanomat.coffeecloud.webapp.rest.docs.ICoffeeGroupReplenishmentResourceDocs;
++import io.swagger.annotations.ApiOperation;
++
++@RestController
++@RequestMapping("/group/replenishment")
++public class CoffeeGroupReplenishmentResource {
++	@Autowired
++	private CoffeeAuthorizationService coffeeAuthorizationService;
++	
++	@Autowired
++	private ReloadRulesPublisher reloadRulesPublisher;
++
++	@Autowired
++	private CoffeeGroupReplenishmentService coffeeGroupReplenishmentService;
++
++	@ApiOperation(value = "Add coffee group replenishment", notes = ICoffeeGroupReplenishmentResourceDocs.CREATE_COFFEE_GROUP_REPLENISHMENT)
++	@PostMapping
++	public CoffeeGroupReplenishment addGroupReplenishment(@RequestBody CoffeeGroupReplenishment coffeeGroupReplenishment) {
++		coffeeAuthorizationService.validateGroup(SecurityUtils.getCurrentUsername(), coffeeGroupReplenishment.getGroupId());
++		if (!ObjectUtils.isEmpty(coffeeGroupReplenishment.getSerialNumbers())
++				&& !(coffeeAuthorizationService.getSerialNumbers(coffeeGroupReplenishment.getGroupId())
++						.containsAll(coffeeGroupReplenishment.getSerialNumbers()))) {
++			throw new ConflictException();
++		}
++		return coffeeGroupReplenishmentService.addGroupReplenishment(coffeeGroupReplenishment);
++	}
++	
++	@ApiOperation(value = "Assign serialnumbers to coffee group replenishment", notes = ICoffeeGroupReplenishmentResourceDocs.ADD_SERIALNUMBERS)
++	@PutMapping("/addSerialNumbers/{id}")
++	public void assignSerialNumber(@PathVariable(value = "id", required = true) String id,
++			@RequestBody Map<String,Double> serialNumbersAndCoffeeAmount) {
++		CoffeeGroupReplenishment coffeeGroupReplenishment = getCoffeeGroupReplenishment(id);
++		Set<String> serialNumbers = serialNumbersAndCoffeeAmount.keySet();
++		if (!ObjectUtils.isEmpty(coffeeGroupReplenishment)) {
++			if (!coffeeAuthorizationService
++					.getAllowedSerialNumbers(SecurityUtils.getCurrentUsername(), coffeeGroupReplenishment.getGroupId(), null)
++					.getSerialNumbers().containsAll(serialNumbers)) {
++				throw new ConflictException();
++			}
++			coffeeGroupReplenishment.setSerialNumbers(serialNumbers);
++			coffeeGroupReplenishmentService.assignSerialNumbers(coffeeGroupReplenishment,serialNumbersAndCoffeeAmount,SecurityUtils.getCurrentUserId());
++		}
++		reloadRulesPublisher.publishMessage(EventType.RULE_ADDED);
++	}
++	
++	@ApiOperation(value = "Get coffee group replenishment", notes = ICoffeeGroupReplenishmentResourceDocs.GET_COFFEE_GROUP_REPLENISHMENT)
++	@GetMapping("/{id}")
++	public CoffeeGroupReplenishment getCoffeeGroupReplenishment(@PathVariable String id) {
++		return coffeeGroupReplenishmentService.getCoffeeGroupReplenishment(id);
++	}
++}
+\ No newline at end of file
+diff --git a/CoffeeWebApplication/src/main/java/dk/scanomat/coffeecloud/webapp/rest/docs/ICoffeeGroupReplenishmentResourceDocs.java b/CoffeeWebApplication/src/main/java/dk/scanomat/coffeecloud/webapp/rest/docs/ICoffeeGroupReplenishmentResourceDocs.java
+new file mode 100644
+index 00000000..3c495794
+--- /dev/null
++++ b/CoffeeWebApplication/src/main/java/dk/scanomat/coffeecloud/webapp/rest/docs/ICoffeeGroupReplenishmentResourceDocs.java
+@@ -0,0 +1,7 @@
++package dk.scanomat.coffeecloud.webapp.rest.docs;
++
++public interface ICoffeeGroupReplenishmentResourceDocs {
++	String CREATE_COFFEE_GROUP_REPLENISHMENT = "Create a coffee group replenishment";
++	String ADD_SERIALNUMBERS = "Assign serial number to a coffee group replenishment";
++	String GET_COFFEE_GROUP_REPLENISHMENT = "Get the coffee group replenishment";
++}
+diff --git a/CoffeeWebApplication/src/test/java/dk/scanomat/coffeecloud/service/CoffeeGroupReplenishmentServiceTest.java b/CoffeeWebApplication/src/test/java/dk/scanomat/coffeecloud/service/CoffeeGroupReplenishmentServiceTest.java
+new file mode 100644
+index 00000000..35fe88df
+--- /dev/null
++++ b/CoffeeWebApplication/src/test/java/dk/scanomat/coffeecloud/service/CoffeeGroupReplenishmentServiceTest.java
+@@ -0,0 +1,168 @@
++package dk.scanomat.coffeecloud.service;
++
++import static org.junit.Assert.assertEquals;
++
++import java.io.File;
++import java.io.IOException;
++import java.net.URL;
++import java.util.Arrays;
++import java.util.Collections;
++import java.util.HashMap;
++import java.util.LinkedHashSet;
++import java.util.Map;
++
++import org.junit.Before;
++import org.junit.BeforeClass;
++import org.junit.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.test.context.web.WebAppConfiguration;
++
++import com.fasterxml.jackson.databind.ObjectMapper;
++
++import dk.scanomat.coffeecloud.config.BaseMongoTest;
++import dk.scanomat.coffeecloud.config.authentication.LoginVM;
++import dk.scanomat.coffeecloud.exception.ConflictException;
++import dk.scanomat.coffeecloud.model.storage.CoffeeGroup;
++import dk.scanomat.coffeecloud.model.storage.CoffeeGroupReplenishment;
++import dk.scanomat.coffeecloud.model.storage.CoffeeUser;
++import dk.scanomat.coffeecloud.model.storage.Role;
++import dk.scanomat.coffeecloud.service.impl.CoffeeGroupService;
++import dk.scanomat.coffeecloud.service.impl.CoffeeUserService;
++import dk.scanomat.coffeecloud.storage.repository.CoffeeGroupReplenishmentRepository;
++import dk.scanomat.coffeecloud.storage.repository.RoleRepository;
++import dk.scanomat.coffeecloud.util.PasswordUtil;
++import dk.scanomat.coffeecloud.webapp.rest.CoffeeGroupReplenishmentResource;
++import dk.scanomat.coffeecloud.webapp.rest.JWTLoginResource;
++
++@WebAppConfiguration
++public class CoffeeGroupReplenishmentServiceTest extends BaseMongoTest {
++
++	private static final String sn1 = "5700091";
++	private static final String sn2 = "5700085";
++	private static final String sn3 = "10010";
++	private static final String sn4 = "1558173";
++	private static final int ENGLAND_GROUP_ID = 1;
++	private static final int LONDON_GROUP_ID = 2;
++	public static final double COFFEE_MINIMUM_REMAINING_AMOUNT = 10;
++	public static final double COFFEE_REPLENISHMENT_AMOUNT = 20;
++
++	public static final String TEST_USERNAME = "testuser";
++	public static final String TEST_PASSWORD = "TestUserPassword1";
++	private static final CoffeeGroup root = new CoffeeGroup(0, "root");
++
++	@Autowired
++	private CoffeeUserService userService;
++
++	@Autowired
++	private JWTLoginResource loginResource;
++
++	@Autowired
++	private RoleRepository roleRepository;
++
++	@Autowired
++	private CoffeeGroupService groupService;
++
++	@Autowired
++	private CoffeeGroupReplenishmentResource groupReplenishmentResource;
++
++	@Autowired
++	private CoffeeGroupReplenishmentRepository groupReplenishmentRepository;
++
++	private static Map<String,Double> serialNumberAndCoffeeAmount;
++
++	@BeforeClass
++	public static void constructGroupTree() {
++		CoffeeGroup groupEngland1 = new CoffeeGroup(ENGLAND_GROUP_ID, "england");
++		groupEngland1.getSerialNumbers().add(sn1);
++		groupEngland1.getSerialNumbers().add(sn2);
++		CoffeeGroup groupLondon2 = new CoffeeGroup(LONDON_GROUP_ID, "london");
++		groupLondon2.getSerialNumbers().add(sn3);
++		groupLondon2.getSerialNumbers().add(sn4);
++		serialNumberAndCoffeeAmount = new HashMap<>();
++		root.getChildGroups().add(groupEngland1);
++		root.getChildGroups().add(groupLondon2);
++	}
++
++	@Before
++	public void initialize() {
++		ensureDefaultUser();
++		loginResource.authorize(LoginVM.builder().username(TEST_USERNAME).password(TEST_PASSWORD).build());
++		groupService.saveGroupTree(root);
++	}
++
++	@Test
++	public void testAddReplenishment() {
++		CoffeeGroupReplenishment groupReplenishment = new CoffeeGroupReplenishment();
++		groupReplenishment.setGroupId(ENGLAND_GROUP_ID);
++		groupReplenishment.setCoffeeMinimumRemainingAmount(COFFEE_MINIMUM_REMAINING_AMOUNT);
++		groupReplenishment.setCoffeeReplenishmentAmount(COFFEE_REPLENISHMENT_AMOUNT);
++		groupReplenishment.setOperatorEmails(new LinkedHashSet<String>(Arrays.asList("abc@gmail.com")));
++		groupReplenishmentResource.addGroupReplenishment(groupReplenishment);
++		CoffeeGroupReplenishment addedGroupReplenishment = groupReplenishmentRepository
++				.findFirstBygroupIdOrderByCreatedTimestampMillisecondsDesc(groupReplenishment.getGroupId());
++		groupReplenishment.setId(addedGroupReplenishment.getId());
++		assertEquals(groupReplenishment,addedGroupReplenishment);
++	}
++	
++	@Test
++	public void testAssignValidSerialNumbersToGroupReplenishment() {
++		String coffeeGroupReplenishmentId = ensureGroupReplenishment();
++		serialNumberAndCoffeeAmount.put(sn1, 10.0);
++		serialNumberAndCoffeeAmount.put(sn2, 20.0);
++		groupReplenishmentResource.assignSerialNumber(coffeeGroupReplenishmentId, serialNumberAndCoffeeAmount);
++	}
++	
++	@Test(expected = ConflictException.class)
++	public void testAssignInvalidSerialNumbersToGroupReplenishment() {
++		String coffeeGroupReplenishmentId = ensureGroupReplenishment();
++		serialNumberAndCoffeeAmount.put(sn1, 10.0);
++		serialNumberAndCoffeeAmount.put(sn3, 20.0);
++		groupReplenishmentResource.assignSerialNumber(coffeeGroupReplenishmentId, serialNumberAndCoffeeAmount);
++	}
++	
++	private String ensureGroupReplenishment() {
++		CoffeeGroupReplenishment groupReplenishment = new CoffeeGroupReplenishment();
++		groupReplenishment.setGroupId(ENGLAND_GROUP_ID);
++		groupReplenishment.setCoffeeMinimumRemainingAmount(COFFEE_MINIMUM_REMAINING_AMOUNT);
++		groupReplenishment.setCoffeeReplenishmentAmount(COFFEE_REPLENISHMENT_AMOUNT);
++		groupReplenishment.setOperatorEmails(new LinkedHashSet<String>(Arrays.asList("abc@gmail.com")));
++		groupReplenishmentResource.addGroupReplenishment(groupReplenishment);
++		CoffeeGroupReplenishment addedGroupReplenishment = groupReplenishmentRepository
++				.findFirstBygroupIdOrderByCreatedTimestampMillisecondsDesc(groupReplenishment.getGroupId());
++		return addedGroupReplenishment.getId();
++	}
++
++	private void ensureDefaultUser() {
++		CoffeeUser rootUser = userService.getVerifiedUser(TEST_USERNAME);
++		if (rootUser != null) {
++			return;
++		}
++
++		Role role = generateRole("role.json");
++		role = roleRepository.save(role);
++
++		rootUser = new CoffeeUser();
++		rootUser.setUserName(TEST_USERNAME);
++		rootUser.setScreenName("Root");
++		rootUser.setCredential(PasswordUtil.getSecureCredential(TEST_PASSWORD, PasswordUtil.generateSalt()));
++		rootUser.getGroupIds().add(0l);
++		rootUser.setRoleIds(Collections.singleton(Role.TESTING));
++		rootUser.setVerified(true);
++		userService.createUser(rootUser);
++	}
++
++	private Role generateRole(String jsonFile) {
++
++		Role role = null;
++		URL resource = Thread.currentThread().getContextClassLoader().getResource(jsonFile);
++		ObjectMapper mapper = new ObjectMapper();
++
++		// JSON from file to Object
++		try {
++			role = mapper.readValue(new File(resource.getFile()), Role.class);
++		} catch (IOException e) {
++			e.printStackTrace();
++		}
++		return role;
++	}
++}
